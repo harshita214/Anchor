@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anchor - Event History</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .history-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--bg-white);
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            border-left: 4px solid var(--secondary-color);
+        }
+
+        .stat-card h3 {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card .value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--secondary-color);
+        }
+
+        .events-list {
+            background: var(--bg-white);
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .event-item {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .event-item:last-child {
+            border-bottom: none;
+        }
+
+        .event-info {
+            flex: 1;
+        }
+
+        .event-topic {
+            font-weight: 600;
+            color: var(--primary-color);
+            font-size: 0.9rem;
+        }
+
+        .event-type {
+            color: var(--secondary-color);
+            font-weight: 500;
+            margin: 0.25rem 0;
+        }
+
+        .event-time {
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        .event-payload {
+            background: var(--bg-light);
+            padding: 0.5rem;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.8rem;
+            color: var(--text-dark);
+            max-width: 300px;
+            overflow: auto;
+        }
+
+        .filter-section {
+            margin-bottom: 2rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-section button {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border-color);
+            background: var(--bg-white);
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .filter-section button.active {
+            background: var(--secondary-color);
+            color: white;
+            border-color: var(--secondary-color);
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: var(--secondary-color);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="history-container">
+        <a href="index.html" class="back-link">← Back to Anchor</a>
+
+        <header class="header">
+            <h1>Event History</h1>
+            <p class="subtitle">Real-time events from Confluent Cloud</p>
+        </header>
+
+        <!-- Stats -->
+        <div class="stats-grid" id="statsGrid">
+            <div class="stat-card">
+                <h3>Total Events</h3>
+                <div class="value" id="totalEvents">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Presence Events</h3>
+                <div class="value" id="presenceCount">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Call Events</h3>
+                <div class="value" id="callCount">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Location Events</h3>
+                <div class="value" id="locationCount">0</div>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filter-section">
+            <button class="filter-btn active" data-topic="all">All Events</button>
+            <button class="filter-btn" data-topic="anchor-presence-events">Presence</button>
+            <button class="filter-btn" data-topic="anchor-call-events">Calls</button>
+            <button class="filter-btn" data-topic="anchor-time-events">Time</button>
+            <button class="filter-btn" data-topic="anchor-location-events">Location</button>
+        </div>
+
+        <!-- Quick Event Creator -->
+        <div style="background: var(--bg-white); padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem; box-shadow: var(--shadow);">
+            <h3 style="margin-bottom: 1rem; color: var(--primary-color);">Quick Event Creator</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.75rem;">
+                <button onclick="createEvent('presence', 'enter', 'Anna (daughter)')" style="padding: 0.75rem; background: var(--secondary-color); color: white; border: none; border-radius: 4px; cursor: pointer;">+ Anna enters</button>
+                <button onclick="createEvent('presence', 'leave', 'Anna (daughter)')" style="padding: 0.75rem; background: var(--accent-color); color: white; border: none; border-radius: 4px; cursor: pointer;">- Anna leaves</button>
+                <button onclick="createEvent('call', 'started', 'Michael (son)')" style="padding: 0.75rem; background: var(--secondary-color); color: white; border: none; border-radius: 4px; cursor: pointer;">📞 Michael calls</button>
+                <button onclick="createEvent('call', 'ended')" style="padding: 0.75rem; background: var(--accent-color); color: white; border: none; border-radius: 4px; cursor: pointer;">📞 End call</button>
+                <button onclick="createEvent('location', null, 'hospital')" style="padding: 0.75rem; background: var(--secondary-color); color: white; border: none; border-radius: 4px; cursor: pointer;">🏥 Hospital</button>
+                <button onclick="createEvent('time', null, 'afternoon')" style="padding: 0.75rem; background: var(--secondary-color); color: white; border: none; border-radius: 4px; cursor: pointer;">🕐 Afternoon</button>
+            </div>
+        </div>
+
+        <!-- Events List -->
+        <div class="events-list" id="eventsList">
+            <div style="padding: 2rem; text-align: center; color: var(--text-light);">
+                Loading events...
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:5001/api';
+        let currentFilter = 'all';
+
+        // Create event from dashboard
+        async function createEvent(type, action, value) {
+            try {
+                let topic, payload;
+                
+                if (type === 'presence') {
+                    topic = 'anchor-presence-events';
+                    payload = { action, person: value };
+                } else if (type === 'call') {
+                    topic = 'anchor-call-events';
+                    payload = { action, caller: value };
+                } else if (type === 'location') {
+                    topic = 'anchor-location-events';
+                    payload = { location: value };
+                } else if (type === 'time') {
+                    topic = 'anchor-time-events';
+                    payload = { time_of_day: value };
+                }
+                
+                const response = await fetch(`${API_BASE}/events/create`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ topic, payload })
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    console.log('Event created:', topic);
+                    loadStats();
+                    loadEvents(currentFilter);
+                }
+            } catch (error) {
+                console.error('Error creating event:', error);
+            }
+        }
+
+        // Load stats
+        async function loadStats() {
+            try {
+                const response = await fetch(`${API_BASE}/stats`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    const stats = data.stats;
+                    document.getElementById('totalEvents').textContent = stats.total_events || 0;
+                    
+                    const byTopic = stats.by_topic || {};
+                    document.getElementById('presenceCount').textContent = byTopic['anchor-presence-events'] || 0;
+                    document.getElementById('callCount').textContent = byTopic['anchor-call-events'] || 0;
+                    document.getElementById('locationCount').textContent = byTopic['anchor-location-events'] || 0;
+                }
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+
+        // Load events
+        async function loadEvents(topic = null) {
+            try {
+                let url = `${API_BASE}/history?limit=50`;
+                if (topic && topic !== 'all') {
+                    url += `&topic=${topic}`;
+                }
+                
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayEvents(data.events);
+                }
+            } catch (error) {
+                console.error('Error loading events:', error);
+            }
+        }
+
+        // Display events
+        function displayEvents(events) {
+            const container = document.getElementById('eventsList');
+            
+            if (events.length === 0) {
+                container.innerHTML = '<div style="padding: 2rem; text-align: center; color: var(--text-light);">No events yet. Create some using the buttons above!</div>';
+                return;
+            }
+            
+            container.innerHTML = events.map(event => `
+                <div class="event-item">
+                    <div class="event-info">
+                        <div class="event-topic">${event.topic}</div>
+                        <div class="event-type">${event.event_type || 'N/A'}</div>
+                        <div class="event-time">${new Date(event.timestamp).toLocaleString()}</div>
+                        <div class="event-payload">${JSON.stringify(event.payload, null, 2)}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Filter buttons
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentFilter = btn.dataset.topic;
+                loadEvents(currentFilter);
+            });
+        });
+
+        // Initial load
+        loadStats();
+        loadEvents();
+
+        // Refresh every 2 seconds
+        setInterval(() => {
+            loadStats();
+            loadEvents(currentFilter);
+        }, 2000);
+    </script>
+</body>
+</html>

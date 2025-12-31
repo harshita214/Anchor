@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anchor - My Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        * {
+            outline-offset: 2px;
+        }
+
+        body {
+            background: #f5f5f5;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+        }
+
+        .dashboard-container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 1rem;
+            min-height: 100vh;
+        }
+
+        .header {
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin: 0 0 0.25rem 0;
+            line-height: 1.2;
+        }
+
+        .header .subtitle {
+            font-size: 1rem;
+            color: #666;
+            margin: 0;
+            font-weight: 400;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            padding: 0.5rem;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+            background: #f0f0f0;
+            border-radius: 4px;
+        }
+
+        .back-link:focus {
+            outline: 3px solid #3498db;
+            outline-offset: 2px;
+            border-radius: 4px;
+        }
+
+        /* Main grounding section - FIRST */
+        .grounding-section {
+            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 2rem 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3);
+            text-align: center;
+        }
+
+        .grounding-section h2 {
+            font-size: 1.3rem;
+            margin: 0 0 1rem 0;
+            font-weight: 700;
+        }
+
+        .grounding-text {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+        }
+
+        .grounding-button {
+            width: 100%;
+            padding: 1.25rem;
+            background: white;
+            color: #27ae60;
+            border: 3px solid white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: all 0.2s;
+        }
+
+        .grounding-button:hover {
+            background: #f0f0f0;
+            transform: translateY(-2px);
+        }
+
+        .grounding-button:focus {
+            outline: 3px solid white;
+            outline-offset: 2px;
+        }
+
+        .grounding-button:active {
+            transform: translateY(0);
+        }
+
+        /* Collapsible sections */
+        .collapsible-section {
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            border: 3px solid transparent;
+        }
+
+        .collapsible-section:focus-within {
+            border-color: #3498db;
+            box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.25rem;
+            background: #f9f9f9;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            transition: all 0.2s;
+        }
+
+        .section-header:hover {
+            background: #f0f0f0;
+        }
+
+        .section-header:focus {
+            outline: 3px solid #3498db;
+            outline-offset: -3px;
+        }
+
+        .section-header.open {
+            background: #e8f4f8;
+            border-bottom: 3px solid #3498db;
+        }
+
+        .section-toggle {
+            font-size: 1.5rem;
+            transition: transform 0.2s;
+        }
+
+        .section-toggle.open {
+            transform: rotate(180deg);
+        }
+
+        .section-content {
+            display: none;
+            padding: 1.5rem;
+            border-top: 1px solid #eee;
+        }
+
+        .section-content.open {
+            display: block;
+        }
+
+        .option-button {
+            width: 100%;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            background: #f9f9f9;
+            border: 3px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            text-align: left;
+            transition: all 0.2s;
+            font-weight: 500;
+            color: #1a1a1a;
+        }
+
+        .option-button:hover {
+            background: #3498db;
+            color: white;
+            border-color: #3498db;
+            transform: translateX(4px);
+        }
+
+        .option-button:focus {
+            outline: 3px solid #3498db;
+            outline-offset: 2px;
+            background: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+
+        .option-button.selected {
+            background: #3498db;
+            color: white;
+            border-color: #3498db;
+            font-weight: 700;
+        }
+
+        .memory-card {
+            background: #f0f8ff;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 0.75rem;
+            border: 3px solid #e0e0e0;
+            border-left: 6px solid #3498db;
+        }
+
+        .memory-title {
+            font-weight: 700;
+            color: #1a1a1a;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .memory-category {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            text-transform: capitalize;
+        }
+
+        .memory-content {
+            color: #333;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        .empty-state {
+            color: #999;
+            font-size: 1rem;
+            padding: 1rem;
+            text-align: center;
+            font-style: italic;
+        }
+
+        .section-description {
+            font-size: 0.95rem;
+            color: #666;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        @media (prefers-contrast: more) {
+            .option-button {
+                border-width: 4px;
+            }
+
+            .collapsible-section {
+                border-width: 4px;
+            }
+
+            .grounding-button {
+                border-width: 4px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation: none !important;
+                transition: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <a href="index.html" class="back-link">← Back to Home</a>
+
+        <header class="header">
+            <h1>My Dashboard</h1>
+            <p class="subtitle">Grounding in the moment</p>
+        </header>
+
+        <!-- MAIN: What's Happening - ALWAYS VISIBLE -->
+        <section class="grounding-section" aria-labelledby="grounding-heading">
+            <h2 id="grounding-heading">🎯 What's Happening?</h2>
+            <p class="grounding-text" id="groundingText">Click below to understand your current situation</p>
+            <button class="grounding-button" onclick="getGrounding()" aria-label="Tell me what's happening right now">
+                Get Grounding
+            </button>
+        </section>
+
+        <!-- COLLAPSIBLE: Where Am I? -->
+        <section class="collapsible-section" aria-labelledby="location-heading">
+            <button class="section-header" onclick="toggleSection(this)" aria-expanded="false" id="location-heading">
+                <span>📍 Where Am I?</span>
+                <span class="section-toggle">▼</span>
+            </button>
+            <div class="section-content">
+                <p class="section-description">Tell us where you are</p>
+                <div id="locationOptions" role="group" aria-label="Location options"></div>
+            </div>
+        </section>
+
+        <!-- COLLAPSIBLE: Who's With Me? -->
+        <section class="collapsible-section" aria-labelledby="people-heading">
+            <button class="section-header" onclick="toggleSection(this)" aria-expanded="false" id="people-heading">
+                <span>👥 Who's With Me?</span>
+                <span class="section-toggle">▼</span>
+            </button>
+            <div class="section-content">
+                <p class="section-description">Select the people with you</p>
+                <div id="peopleOptions" role="group" aria-label="People options"></div>
+            </div>
+        </section>
+
+        <!-- COLLAPSIBLE: My Memories -->
+        <section class="collapsible-section" aria-labelledby="memories-heading">
+            <button class="section-header" onclick="toggleSection(this)" aria-expanded="false" id="memories-heading">
+                <span>💭 My Memories</span>
+                <span class="section-toggle">▼</span>
+            </button>
+            <div class="section-content">
+                <p class="section-description">Things you want to remember</p>
+                <div id="memoriesContainer" role="region" aria-live="polite" aria-label="Your memories"></div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:5001/api';
+        const USER_ID = 'dementia-user-1';
+        
+        let selectedLocation = null;
+        let selectedPeople = [];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadLocations();
+            loadPeople();
+            loadMemories();
+            announceToScreenReader('Dashboard loaded. Click Get Grounding to understand what is happening.');
+        });
+
+        function announceToScreenReader(message) {
+            const announcement = document.createElement('div');
+            announcement.setAttribute('role', 'status');
+            announcement.setAttribute('aria-live', 'polite');
+            announcement.setAttribute('aria-atomic', 'true');
+            announcement.style.position = 'absolute';
+            announcement.style.left = '-10000px';
+            announcement.textContent = message;
+            document.body.appendChild(announcement);
+            setTimeout(() => announcement.remove(), 1000);
+        }
+
+        function toggleSection(button) {
+            const isOpen = button.getAttribute('aria-expanded') === 'true';
+            button.setAttribute('aria-expanded', !isOpen);
+            button.classList.toggle('open');
+            button.querySelector('.section-toggle').classList.toggle('open');
+            button.nextElementSibling.classList.toggle('open');
+        }
+
+        async function loadLocations() {
+            const locations = ['Home', 'Hospital', 'Park', 'Grocery Store', 'Doctor\'s Office'];
+            const container = document.getElementById('locationOptions');
+            
+            container.innerHTML = locations.map(loc => `
+                <button class="option-button" 
+                        onclick="selectLocation('${loc}')"
+                        aria-pressed="false"
+                        title="Select ${loc}">
+                    ${loc}
+                </button>
+            `).join('');
+        }
+
+        async function loadPeople() {
+            const people = [
+                { name: 'Anna (daughter)', id: 'anna' },
+                { name: 'Michael (son)', id: 'michael' },
+                { name: 'John (brother)', id: 'john' },
+                { name: 'Sarah (wife)', id: 'sarah' }
+            ];
+            
+            const container = document.getElementById('peopleOptions');
+            
+            container.innerHTML = people.map(person => `
+                <button class="option-button" 
+                        onclick="togglePerson('${person.name}', '${person.id}')"
+                        aria-pressed="false"
+                        title="Toggle ${person.name}">
+                    ✓ ${person.name}
+                </button>
+            `).join('');
+        }
+
+        async function loadMemories() {
+            try {
+                const response = await fetch(`${API_BASE}/memories/get?user_id=${USER_ID}`);
+                const data = await response.json();
+                
+                const container = document.getElementById('memoriesContainer');
+                
+                if (!data.success || data.memories.length === 0) {
+                    container.innerHTML = '<p class="empty-state">No memories saved yet</p>';
+                    return;
+                }
+                
+                const memories = data.memories.map(event => ({
+                    title: event.payload.title,
+                    content: event.payload.content,
+                    category: event.payload.category
+                }));
+                
+                container.innerHTML = memories.map((mem, idx) => `
+                    <article class="memory-card" role="article">
+                        <h3 class="memory-title">${mem.title}</h3>
+                        <p class="memory-category">Category: ${mem.category}</p>
+                        <p class="memory-content">${mem.content}</p>
+                    </article>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading memories:', error);
+                document.getElementById('memoriesContainer').innerHTML = '<p class="empty-state">Error loading memories</p>';
+            }
+        }
+
+        function selectLocation(location) {
+            selectedLocation = location;
+            
+            document.querySelectorAll('#locationOptions .option-button').forEach(btn => {
+                btn.classList.remove('selected');
+                btn.setAttribute('aria-pressed', 'false');
+            });
+            event.target.classList.add('selected');
+            event.target.setAttribute('aria-pressed', 'true');
+            
+            announceToScreenReader(`Location set to ${location}`);
+            
+            fetch(`${API_BASE}/events/create`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    topic: 'anchor-location-events',
+                    payload: { location }
+                })
+            });
+        }
+
+        function togglePerson(name, id) {
+            if (selectedPeople.includes(name)) {
+                selectedPeople = selectedPeople.filter(p => p !== name);
+                event.target.classList.remove('selected');
+                event.target.setAttribute('aria-pressed', 'false');
+                
+                announceToScreenReader(`${name} removed`);
+                
+                fetch(`${API_BASE}/events/create`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        topic: 'anchor-presence-events',
+                        payload: { action: 'leave', person: name }
+                    })
+                });
+            } else {
+                selectedPeople.push(name);
+                event.target.classList.add('selected');
+                event.target.setAttribute('aria-pressed', 'true');
+                
+                announceToScreenReader(`${name} added`);
+                
+                fetch(`${API_BASE}/events/create`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        topic: 'anchor-presence-events',
+                        payload: { action: 'enter', person: name }
+                    })
+                });
+            }
+        }
+
+        async function getGrounding() {
+            try {
+                announceToScreenReader('Getting your grounding explanation...');
+                
+                const response = await fetch(`${API_BASE}/explain`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    document.getElementById('groundingText').textContent = data.explanation;
+                    announceToScreenReader(data.explanation);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                announceToScreenReader('Error getting explanation. Please try again.');
+            }
+        }
+    </script>
+</body>
+</html>

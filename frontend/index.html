@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anchor - Context Continuity Engine</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        * {
+            outline-offset: 2px;
+        }
+
+        body {
+            background: #f5f5f5;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin: 0 0 0.25rem 0;
+        }
+
+        .header .subtitle {
+            font-size: 1rem;
+            color: #666;
+            margin: 0;
+        }
+
+        /* Navigation buttons */
+        .nav-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .nav-button {
+            padding: 1rem;
+            background: white;
+            border: 3px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 700;
+            text-decoration: none;
+            color: #1a1a1a;
+            text-align: center;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-button:hover {
+            background: #3498db;
+            color: white;
+            border-color: #3498db;
+            transform: translateY(-2px);
+        }
+
+        .nav-button:focus {
+            outline: 3px solid #3498db;
+            outline-offset: 2px;
+        }
+
+        .nav-icon {
+            font-size: 1.5rem;
+        }
+
+        /* Collapsible sections */
+        .collapsible-section {
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            border: 3px solid transparent;
+        }
+
+        .collapsible-section:focus-within {
+            border-color: #3498db;
+            box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.25rem;
+            background: #f9f9f9;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            transition: all 0.2s;
+        }
+
+        .section-header:hover {
+            background: #f0f0f0;
+        }
+
+        .section-header:focus {
+            outline: 3px solid #3498db;
+            outline-offset: -3px;
+        }
+
+        .section-header.open {
+            background: #e8f4f8;
+            border-bottom: 3px solid #3498db;
+        }
+
+        .section-toggle {
+            font-size: 1.5rem;
+            transition: transform 0.2s;
+        }
+
+        .section-toggle.open {
+            transform: rotate(180deg);
+        }
+
+        .section-content {
+            display: none;
+            padding: 1.5rem;
+            border-top: 1px solid #eee;
+        }
+
+        .section-content.open {
+            display: block;
+        }
+
+        .event-log {
+            font-family: monospace;
+            font-size: 0.9rem;
+            color: #333;
+            background: #f9f9f9;
+            padding: 1rem;
+            border-radius: 4px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .event-log-item {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #eee;
+            line-height: 1.4;
+        }
+
+        .event-log-item:last-child {
+            border-bottom: none;
+        }
+
+        .event-time {
+            color: #3498db;
+            font-weight: 600;
+        }
+
+        .event-type {
+            color: #27ae60;
+            font-weight: 600;
+        }
+
+        .simulate-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .simulate-btn {
+            padding: 0.75rem;
+            background: #3498db;
+            color: white;
+            border: 3px solid #3498db;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .simulate-btn:hover {
+            background: #2980b9;
+            border-color: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        .simulate-btn:focus {
+            outline: 3px solid #3498db;
+            outline-offset: 2px;
+        }
+
+        .manual-input {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .manual-input input {
+            padding: 0.75rem;
+            border: 3px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        .manual-input input:focus {
+            outline: 3px solid #3498db;
+            outline-offset: 2px;
+            border-color: #3498db;
+        }
+
+        .manual-input button {
+            padding: 0.75rem;
+            background: #27ae60;
+            color: white;
+            border: 3px solid #27ae60;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .manual-input button:hover {
+            background: #229954;
+            border-color: #229954;
+        }
+
+        .manual-input button:focus {
+            outline: 3px solid #27ae60;
+            outline-offset: 2px;
+        }
+
+        .state-display {
+            background: #f0f8ff;
+            border: 3px solid #3498db;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .state-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            font-size: 1rem;
+        }
+
+        .state-label {
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+
+        .state-value {
+            color: #3498db;
+            font-weight: 600;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 1.5rem 0;
+            color: #666;
+            font-size: 0.95rem;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        .footer-links a {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+
+        @media (prefers-contrast: more) {
+            .simulate-btn,
+            .manual-input button {
+                border-width: 4px;
+            }
+
+            .collapsible-section {
+                border-width: 4px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation: none !important;
+                transition: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Anchor</h1>
+            <p class="subtitle">Grounding in the present moment</p>
+        </header>
+
+        <!-- Navigation to other dashboards -->
+        <div class="nav-buttons">
+            <a href="user-dashboard.html" class="nav-button">
+                <span class="nav-icon">👤</span>
+                <span>User Dashboard</span>
+            </a>
+            <a href="caregiver-dashboard.html" class="nav-button">
+                <span class="nav-icon">👨‍⚕️</span>
+                <span>Caregiver Dashboard</span>
+            </a>
+        </div>
+
+        <!-- Current State -->
+        <section class="collapsible-section" aria-labelledby="state-heading">
+            <button class="section-header" onclick="toggleSection(this)" aria-expanded="true" id="state-heading">
+                <span>📊 Current State</span>
+                <span class="section-toggle open">▼</span>
+            </button>
+            <div class="section-content open">
+                <div class="state-display">
+                    <div class="state-item">
+                        <span class="state-label">Location:</span>
+                        <span class="state-value" id="stateLocation">home</span>
+                    </div>
+                    <div class="state-item">
+                        <span class="state-label">Time:</span>
+                        <span class="state-value" id="stateTime">morning</span>
+                    </div>
+                    <div class="state-item">
+                        <span class="state-label">People:</span>
+                        <span class="state-value" id="statePeople">no one</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Live Events -->
+        <section class="collapsible-section" aria-labelledby="events-heading">
+            <button class="section-header" onclick="toggleSection(this)" aria-expanded="false" id="events-heading">
+                <span>📡 Live Events</span>
+                <span class="section-toggle">▼</span>
+            </button>
+            <div class="section-content">
+                <p style="font-size: 0.95rem; color: #666; margin-bottom: 1rem;">Real-time events from Confluent Cloud</p>
+                <div class="event-log" id="eventLog">
+                    <div class="event-log-item" style="color: #999;">Waiting for events...</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Event Simulator -->
+        <section class="collapsible-section" aria-labelledby="simulator-heading">
+            <button class="section-header" onclick="toggleSection(this)" aria-expanded="false" id="simulator-heading">
+                <span>🎬 Event Simulator</span>
+                <span class="section-toggle">▼</span>
+            </button>
+            <div class="section-content">
+                <p style="font-size: 0.95rem; color: #666; margin-bottom: 1rem;">
+                    <strong>Demo:</strong> Click buttons to simulate events flowing through Confluent Cloud
+                </p>
+                <div class="simulate-buttons">
+                    <button class="simulate-btn" onclick="simulateEvent('presence', 'enter', 'Anna (daughter)')">👤 Anna enters</button>
+                    <button class="simulate-btn" onclick="simulateEvent('presence', 'leave', 'Anna (daughter)')">👤 Anna leaves</button>
+                    <button class="simulate-btn" onclick="simulateEvent('call', 'started', 'Michael (son)')">📞 Michael calls</button>
+                    <button class="simulate-btn" onclick="simulateEvent('call', 'ended', null)">📞 End call</button>
+                    <button class="simulate-btn" onclick="simulateEvent('time', null, 'morning')">🌅 Morning</button>
+                    <button class="simulate-btn" onclick="simulateEvent('time', null, 'afternoon')">☀️ Afternoon</button>
+                    <button class="simulate-btn" onclick="simulateEvent('location', null, 'home')">🏠 Home</button>
+                    <button class="simulate-btn" onclick="simulateEvent('location', null, 'hospital')">🏥 Hospital</button>
+                </div>
+
+                <div style="border-top: 1px solid #eee; padding-top: 1rem; margin-top: 1rem;">
+                    <p style="font-size: 0.95rem; color: #666; margin-bottom: 0.75rem;">Or add custom information:</p>
+                    <div class="manual-input">
+                        <input type="text" id="personName" placeholder="Person name">
+                        <input type="text" id="personRole" placeholder="Relationship">
+                        <button onclick="addPerson()">+ Add</button>
+                        <button onclick="removePerson()">- Remove</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Anchor helps people with dementia stay grounded in the present moment.</p>
+            <p style="font-size: 0.9rem; color: #999;">Backend: <span id="backendStatus">connecting...</span></p>
+            <div class="footer-links">
+                <a href="history.html">📊 Event History</a>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:5001/api';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            checkBackendConnection();
+            updateState();
+            startPollingState();
+            startPollingEvents();
+        });
+
+        function toggleSection(button) {
+            const isOpen = button.getAttribute('aria-expanded') === 'true';
+            button.setAttribute('aria-expanded', !isOpen);
+            button.classList.toggle('open');
+            button.querySelector('.section-toggle').classList.toggle('open');
+            button.nextElementSibling.classList.toggle('open');
+        }
+
+        async function checkBackendConnection() {
+            try {
+                const response = await fetch(`${API_BASE}/health`);
+                if (response.ok) {
+                    document.getElementById('backendStatus').textContent = 'Connected';
+                    document.getElementById('backendStatus').style.color = '#27ae60';
+                } else {
+                    document.getElementById('backendStatus').textContent = 'Error';
+                    document.getElementById('backendStatus').style.color = '#c0392b';
+                }
+            } catch (error) {
+                document.getElementById('backendStatus').textContent = 'Disconnected';
+                document.getElementById('backendStatus').style.color = '#c0392b';
+            }
+        }
+
+        async function updateState() {
+            try {
+                const response = await fetch(`${API_BASE}/state`);
+                const state = await response.json();
+                
+                document.getElementById('stateLocation').textContent = state.location || 'home';
+                document.getElementById('stateTime').textContent = state.time_of_day || 'now';
+                
+                const peopleList = state.people_present || [];
+                const peopleText = peopleList.length > 0 ? peopleList.join(', ') : 'no one';
+                document.getElementById('statePeople').textContent = peopleText;
+            } catch (error) {
+                console.error('Error updating state:', error);
+            }
+        }
+
+        function startPollingState() {
+            setInterval(updateState, 2000);
+        }
+
+        function startPollingEvents() {
+            setInterval(async () => {
+                try {
+                    const response = await fetch(`${API_BASE}/history?limit=1`);
+                    const data = await response.json();
+                    
+                    if (data.success && data.events.length > 0) {
+                        const latestEvent = data.events[0];
+                        addEventToLog(latestEvent.topic, latestEvent.payload);
+                    }
+                } catch (error) {
+                    console.error('Error polling events:', error);
+                }
+            }, 1000);
+        }
+
+        async function simulateEvent(type, action, value) {
+            try {
+                let topic, payload;
+                
+                if (type === 'presence') {
+                    topic = 'anchor-presence-events';
+                    payload = { action, person: value };
+                } else if (type === 'call') {
+                    topic = 'anchor-call-events';
+                    payload = { action, caller: value };
+                } else if (type === 'location') {
+                    topic = 'anchor-location-events';
+                    payload = { location: value };
+                } else if (type === 'time') {
+                    topic = 'anchor-time-events';
+                    payload = { time_of_day: value };
+                }
+                
+                const response = await fetch(`${API_BASE}/events/create`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ topic, payload })
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    console.log('[Anchor] Event simulated:', topic);
+                    addEventToLog(topic, payload);
+                }
+            } catch (error) {
+                console.error('[Anchor] Error simulating event:', error);
+            }
+        }
+
+        function addPerson() {
+            const name = document.getElementById('personName').value;
+            const role = document.getElementById('personRole').value;
+            
+            if (!name) {
+                alert('Please enter a name');
+                return;
+            }
+            
+            const person = role ? `${name} (${role})` : name;
+            simulateEvent('presence', 'enter', person);
+            
+            document.getElementById('personName').value = '';
+            document.getElementById('personRole').value = '';
+        }
+
+        function removePerson() {
+            const name = document.getElementById('personName').value;
+            const role = document.getElementById('personRole').value;
+            
+            if (!name) {
+                alert('Please enter a name');
+                return;
+            }
+            
+            const person = role ? `${name} (${role})` : name;
+            simulateEvent('presence', 'leave', person);
+            
+            document.getElementById('personName').value = '';
+            document.getElementById('personRole').value = '';
+        }
+
+        function addEventToLog(topic, payload) {
+            const time = new Date().toLocaleTimeString();
+            const eventType = payload.action || payload.time_of_day || payload.location || 'event';
+            
+            const eventLog = document.getElementById('eventLog');
+            const newItem = document.createElement('div');
+            newItem.className = 'event-log-item';
+            newItem.innerHTML = `<span class="event-time">[${time}]</span> <span class="event-type">${topic.replace('anchor-', '').replace('-events', '')}</span>: ${eventType}`;
+            
+            eventLog.insertBefore(newItem, eventLog.firstChild);
+            
+            // Keep only last 10 events
+            while (eventLog.children.length > 10) {
+                eventLog.removeChild(eventLog.lastChild);
+            }
+        }
+    </script>
+</body>
+</html>

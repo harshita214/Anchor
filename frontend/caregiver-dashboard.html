@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anchor - Caregiver Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        * {
+            outline-offset: 2px;
+        }
+
+        body {
+            background: #f5f5f5;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+        }
+
+        .caregiver-container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 1rem;
+            min-height: 100vh;
+        }
+
+        .header {
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin: 0 0 0.25rem 0;
+            line-height: 1.2;
+        }
+
+        .header .subtitle {
+            font-size: 1rem;
+            color: #666;
+            margin: 0;
+            font-weight: 400;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            padding: 0.5rem;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+            background: #f0f0f0;
+            border-radius: 4px;
+        }
+
+        .back-link:focus {
+            outline: 3px solid #3498db;
+            outline-offset: 2px;
+            border-radius: 4px;
+        }
+
+        .status-alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border-left: 6px solid;
+        }
+
+        .status-alert.success {
+            background: #d5f4e6;
+            color: #27ae60;
+            border-left-color: #27ae60;
+        }
+
+        .status-alert.info {
+            background: #d6eaf8;
+            color: #2980b9;
+            border-left-color: #2980b9;
+        }
+
+        .status-alert.error {
+            background: #fadbd8;
+            color: #c0392b;
+            border-left-color: #c0392b;
+        }
+
+        /* Collapsible sections */
+        .collapsible-section {
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            border: 3px solid transparent;
+        }
+
+        .collapsible-section:focus-within {
+            border-color: #3498db;
+            box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.25rem;
+            background: #f9f9f9;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            transition: all 0.2s;
+        }
+
+        .section-header:hover {
+            background: #f0f0f0;
+        }
+
+        .section-header:focus {
+            outline: 3px solid #3498db;
+            outline-offset: -3px;
+        }
+
+        .section-header.open {
+            background: #e8f4f8;
+            border-bottom: 3px solid #3498db;
+        }
+
+        .section-toggle {
+            font-size: 1.5rem;
+            transition: transform 0.2s;
+        }
+
+        .section-toggle.open {
+            transform: rotate(180deg);
+        }
+
+        .section-content {
+            display: none;
+            padding: 1.5rem;
+            border-top: 1px solid #eee;
+        }
+
+        .section-content.open {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            color: #1a1a1a;
+            font-size: 1.1rem;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 1rem;
+            border: 3px solid #ddd;
+            border-radius: 4px;
+            font-size: 1.1rem;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: 3px solid #3498db;
+            outline-offset: 2px;
+            border-color: #3498db;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-group small {
+            color: #666;
+            font-size: 0.9rem;
+            display: block;
+            margin-top: 0.5rem;
+        }
+
+        .form-button {
+            width: 100%;
+            padding: 1.25rem;
+            background: #27ae60;
+            color: white;
+            border: 3px solid #27ae60;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: all 0.2s;
+        }
+
+        .form-button:hover {
+            background: #229954;
+            border-color: #229954;
+            transform: translateY(-2px);
+        }
+
+        .form-button:focus {
+            outline: 3px solid #27ae60;
+            outline-offset: 2px;
+        }
+
+        .form-button:active {
+            transform: translateY(0);
+        }
+
+        .item-card {
+            background: #f9f9f9;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-bottom: 0.75rem;
+            border: 3px solid #e0e0e0;
+            border-left: 6px solid #3498db;
+        }
+
+        .item-title {
+            font-weight: 700;
+            color: #1a1a1a;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .item-subtitle {
+            font-size: 0.95rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .item-content {
+            font-size: 1rem;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .empty-state {
+            color: #999;
+            font-size: 1rem;
+            padding: 1rem;
+            text-align: center;
+            font-style: italic;
+        }
+
+        .item-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        @media (prefers-contrast: more) {
+            .form-group input,
+            .form-group textarea,
+            .form-group select {
+                border-width: 4px;
+            }
+
+            .collapsible-section {
+                border-width: 4px;
+            }
+
+            .form-button {
+                border-width: 4px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation: none !important;
+                transition: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="caregiver-container">
+        <a href="index.html" class="back-link">← Back to Home</a>
+
+        <header class="header">
+            <h1>Caregiver Dashboard</h1>
+            <p class="subtitle">Manage care information</p>
+        </header>
+
+        <div id="statusAlert" role="status" aria-live="polite" aria-atomic="true"></div>
+
+        <!-- Add Memory -->
+        <section class="collapsible-section" aria-labelledby="memory-heading">
+            <button class="section-header" onclick="toggleSection(this)" aria-expanded="false" id="memory-heading">
+                <span>💭 Add Memory</span>
+                <span class="section-toggle">▼</span>
+            </button>
+            <div class="section-content">
+                <div class="form-group">
+                    <label for="memoryTitle">Memory Title</label>
+                    <input type="text" id="memoryTitle" placeholder="e.g., Our Wedding Day">
+                    <small>Give the memory a short title</small>
+                </div>
+                <div class="form-group">
+                    <label for="memoryContent">Memory Details</label>
+                    <textarea id="memoryContent" placeholder="Share the memory..."></textarea>
+                    <small>Write down the details of the memory</small>
+                </div>
+                <div class="form-group">
+                    <label for="memoryCategory">Category</label>
+                    <select id="memoryCategory">
+                        <option value="general">General</option>
+                        <option value="family">Family</option>
+                        <option value="work">Work</option>
+                        <option value="travel">Travel</option>
+                        <option value="hobby">Hobby</option>
+                    </select>
+                </div>
+                <button class="form-button" onclick="addMemory()">Save Memory</button>
+            </div>
+        </section>
+
+        <!-- Add Person -->
+        <section class="collapsible-section" aria-labelledby="person-heading">
+            <button class="section-header" onclick="toggleSection(this)" aria-expanded="false" id="person-heading">
+                <span>👥 Add Person</span>
+                <span class="section-toggle">▼</span>
+            </button>
+            <div class="section-content">
+                <div class="form-group">
+                    <label for="personName">Person's Name</label>
+                    <input type="text" id="personName" placeholder="e.g., Anna">
+                    <small>Full name of the person</small>
+                </div>
+                <div class="form-group">
+                    <label for="personRelationship">Relationship</label>
+                    <input type="text" id="personRelationship" placeholder="e.g., daughter">
+                    <small>How they are related (e.g., daughter, son, friend)</small>
+                </div>
+                <div class="form-group">
+                    <label for="personPhone">Phone Number (optional)</label>
+                    <input type="tel" id="personPhone" placeholder="e.g., +1-555-0123">
+                    <small>Contact phone number</small>
+                </div>
+                <button class="form-button" onclick="addPerson()">Add Person</button>
+            </div>
+        </section>
+
+        <!-- Update Location -->
+        <section class="collapsible-section" aria-labelledby="location-heading">
+            <button class="section-header" onclick="toggleSection(this)" aria-expanded="false" id="location-heading">
+                <span>📍 Update Location</span>
+                <span class="section-toggle">▼</span>
+            </button>
+            <div class="section-content">
+                <div class="form-group">
+                    <label for="locationSelect">Current Location</label>
+                    <select id="locationSelect">
+                        <option value="">Select location...</option>
+                        <option value="home">Home</option>
+                        <option value="hospital">Hospital</option>
+                        <option value="park">Park</option>
+                        <option value="grocery">Grocery Store</option>
+                        <option value="doctor">Doctor's Office</option>
+                    </select>
+                    <small>Select the current location</small>
+                </div>
+                <button class="form-button" onclick="updateLocation()">Update Location</button>
+            </div>
+        </section>
+
+        <!-- Recent Memories -->
+        <section class="collapsible-section" aria-labelledby="memories-list-heading">
+            <button class="section-header" onclick="toggleSection(this)" aria-expanded="false" id="memories-list-heading">
+                <span>📚 Recent Memories</span>
+                <span class="section-toggle">▼</span>
+            </button>
+            <div class="section-content">
+                <div class="item-list" id="memoriesList" role="region" aria-live="polite">
+                    <p class="empty-state">No memories yet</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- People Registry -->
+        <section class="collapsible-section" aria-labelledby="people-list-heading">
+            <button class="section-header" onclick="toggleSection(this)" aria-expanded="false" id="people-list-heading">
+                <span>👫 People Registry</span>
+                <span class="section-toggle">▼</span>
+            </button>
+            <div class="section-content">
+                <div class="item-list" id="peopleList" role="region" aria-live="polite">
+                    <p class="empty-state">No people added yet</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:5001/api';
+        const DEMENTIA_USER_ID = 'dementia-user-1';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadMemories();
+            loadPeople();
+        });
+
+        function toggleSection(button) {
+            const isOpen = button.getAttribute('aria-expanded') === 'true';
+            button.setAttribute('aria-expanded', !isOpen);
+            button.classList.toggle('open');
+            button.querySelector('.section-toggle').classList.toggle('open');
+            button.nextElementSibling.classList.toggle('open');
+        }
+
+        function showStatus(message, type = 'success') {
+            const alert = document.getElementById('statusAlert');
+            alert.innerHTML = `<div class="status-alert ${type}">${message}</div>`;
+            setTimeout(() => {
+                alert.innerHTML = '';
+            }, 3000);
+        }
+
+        async function addMemory() {
+            const title = document.getElementById('memoryTitle').value;
+            const content = document.getElementById('memoryContent').value;
+            const category = document.getElementById('memoryCategory').value;
+
+            if (!title || !content) {
+                showStatus('Please fill in all fields', 'info');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/memories/add`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        user_id: DEMENTIA_USER_ID,
+                        title,
+                        content,
+                        category
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                console.log('Memory response:', data);
+                
+                if (data.success) {
+                    showStatus('Memory saved!', 'success');
+                    document.getElementById('memoryTitle').value = '';
+                    document.getElementById('memoryContent').value = '';
+                    loadMemories();
+                } else {
+                    showStatus(`Error: ${data.error || 'Unknown error'}`, 'error');
+                    console.error('Backend error:', data.error);
+                }
+            } catch (error) {
+                showStatus(`Error saving memory: ${error.message}`, 'error');
+                console.error('Fetch error:', error);
+            }
+        }
+
+        async function addPerson() {
+            const name = document.getElementById('personName').value;
+            const relationship = document.getElementById('personRelationship').value;
+
+            if (!name || !relationship) {
+                showStatus('Please fill in name and relationship', 'info');
+                return;
+            }
+
+            try {
+                showStatus('Person added!', 'success');
+                document.getElementById('personName').value = '';
+                document.getElementById('personRelationship').value = '';
+                document.getElementById('personPhone').value = '';
+                loadPeople();
+            } catch (error) {
+                showStatus('Error adding person', 'error');
+            }
+        }
+
+        async function updateLocation() {
+            const location = document.getElementById('locationSelect').value;
+
+            if (!location) {
+                showStatus('Please select a location', 'info');
+                return;
+            }
+
+            try {
+                await fetch(`${API_BASE}/events/create`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        topic: 'anchor-location-events',
+                        payload: { location }
+                    })
+                });
+
+                showStatus('Location updated!', 'success');
+                document.getElementById('locationSelect').value = '';
+            } catch (error) {
+                showStatus('Error updating location', 'error');
+            }
+        }
+
+        async function loadMemories() {
+            try {
+                const response = await fetch(`${API_BASE}/memories/get?user_id=${DEMENTIA_USER_ID}`);
+                const data = await response.json();
+                
+                const container = document.getElementById('memoriesList');
+                
+                if (!data.success || data.memories.length === 0) {
+                    container.innerHTML = '<p class="empty-state">No memories yet</p>';
+                    return;
+                }
+                
+                const memories = data.memories
+                    .map(event => ({
+                        title: event.payload.title,
+                        content: event.payload.content,
+                        category: event.payload.category,
+                        timestamp: event.timestamp
+                    }))
+                    .slice(0, 5);
+                
+                container.innerHTML = memories.map(mem => `
+                    <article class="item-card">
+                        <div class="item-title">${mem.title}</div>
+                        <div class="item-subtitle">Category: ${mem.category}</div>
+                        <div class="item-content">${mem.content}</div>
+                        <div style="font-size: 0.85rem; color: #999; margin-top: 0.5rem;">Saved: ${new Date(mem.timestamp).toLocaleDateString()}</div>
+                    </article>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading memories:', error);
+                document.getElementById('memoriesList').innerHTML = '<p class="empty-state">Error loading memories</p>';
+            }
+        }
+
+        async function loadPeople() {
+            const people = [
+                { name: 'Anna', relationship: 'daughter', phone: '+1-555-0001' },
+                { name: 'Michael', relationship: 'son', phone: '+1-555-0002' }
+            ];
+
+            const container = document.getElementById('peopleList');
+            if (people.length === 0) {
+                container.innerHTML = '<p class="empty-state">No people added yet</p>';
+                return;
+            }
+
+            container.innerHTML = people.map(person => `
+                <div class="item-card">
+                    <div class="item-title">${person.name}</div>
+                    <div class="item-subtitle">${person.relationship}</div>
+                    <div class="item-content">${person.phone || 'No phone'}</div>
+                </div>
+            `).join('');
+        }
+    </script>
+</body>
+</html>
