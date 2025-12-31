@@ -1,6 +1,6 @@
 # Anchor: Context Continuity Engine for Dementia Care
 
-Grounding people with dementia in the present moment through real-time context synthesis and calm voice explanations.
+Grounding people with dementia in the present moment through real-time context synthesis. Bringing clarity to confused minds, one real-time moment at a time.
 
 ## The Problem
 People with early-to-mid stage dementia experience sudden context collapse — losing track of where they are, who's with them, and what's happening. This triggers anxiety, repeated questioning, and exhaustion for caregivers.
@@ -9,10 +9,10 @@ People with early-to-mid stage dementia experience sudden context collapse — l
 Anchor is a real-time system that:
 - **Captures** events from the environment (who's present, location, time, calls)
 - **Synthesizes** context using AI (Google Gemini)
-- **Communicates** calmly through voice (ElevenLabs) and text
+- **Communicates** calmly through text explanations
 - **Stores** memories permanently (Confluent Cloud + SQLite)
 
-When someone feels confused, they click "Get Grounding" and hear a clear, compassionate explanation of their current reality.
+When someone feels confused, they click "Get Grounding" and see a clear, compassionate explanation of their current reality.
 
 ## Features
 - **User Dashboard**: One-page interface with "What's Happening?" grounding, location tracking, people registry, and memory recall
@@ -27,7 +27,6 @@ When someone feels confused, they click "Get Grounding" and hear a clear, compas
 - Python 3.9+
 - Confluent Cloud account (see `CONFLUENT_SETUP.md`)
 - Google Vertex AI credentials (optional, has fallback)
-- ElevenLabs API key (optional, has fallback)
 
 ### Setup
 ```bash
@@ -60,8 +59,6 @@ Backend Consumer (Flask)
 State Manager (current reality)
     ↓
 Context Processor (Gemini AI)
-    ↓
-Voice Synthesis (ElevenLabs)
     ↓
 Web UI (User & Caregiver Dashboards)
 ```
@@ -106,8 +103,8 @@ Web UI (User & Caregiver Dashboards)
 
 ### Behind the Scenes
 - Events flow to Confluent Cloud (presence, calls, location, time)
-- Backend synthesizes context: "You're at home with Anna. It's afternoon."
-- Voice is generated and played
+- Backend synthesizes context using Gemini: "You're at home with Anna. It's afternoon."
+- Text explanation is displayed on screen
 - All data is stored permanently for replay and continuity
 
 ## Event Types
@@ -126,6 +123,7 @@ Web UI (User & Caregiver Dashboards)
 - Calm, non-overwhelming design
 
 ## Next Steps
+- Integrate voice synthesis (ElevenLabs or similar)
 - Integrate real IoT sensors (location tracking, presence detection)
 - Mobile app for on-the-go access
 - Multi-language support
